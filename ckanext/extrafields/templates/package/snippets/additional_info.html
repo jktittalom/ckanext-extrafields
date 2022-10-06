@@ -1,0 +1,42 @@
+{% ckan_extends %}
+
+{% block extras %}
+  {% if pkg_dict.custom_text %}
+    <tr>
+      <th scope="row" class="dataset-label">{{ _("Spatial / Geographical Coverage Area") }}</th>
+      <td class="dataset-details">{{ pkg_dict.spatial }}</td>
+    </tr>
+    <tr>
+      <th scope="row" class="dataset-label">{{ _("Spatial / Geographical Coverage Location") }}</th>
+      <td class="dataset-details">{{ pkg_dict.spatial_text }}</td>
+    </tr>
+    <tr>
+      <th scope="row" class="dataset-label">{{ _("Temporal Start") }}</th>
+      <td class="dataset-details">{{ pkg_dict.temporal_start }}</td>
+    </tr>
+    <tr>
+      <th scope="row" class="dataset-label">{{ _("Temporal End") }}</th>
+      <td class="dataset-details">{{ pkg_dict.temporal_end }}</td>
+    </tr>
+    <tr>
+      <th scope="row" class="dataset-label">{{ _("Publisher") }}</th>
+      <td class="dataset-details">{{ pkg_dict.publisher_name }}</td>
+    </tr>
+    <tr>
+      <th scope="row" class="dataset-label">{{ _("Publisher URL") }}</th>
+      <td class="dataset-details">{{ pkg_dict.publisher_URL }}</td>
+    </tr>
+    <tr>
+      <th scope="row" class="dataset-label">{{ _("Data Dictionary URL") }}</th>
+      <td class="dataset-details">{{ pkg_dict.data_dictionary_URL }}</td>
+    </tr>
+    <tr>
+      <th scope="row" class="dataset-label">{{ _("Release Date") }}</th>
+      <td class="dataset-details">{{ pkg_dict.issued }}</td>
+    </tr>
+    <tr>
+      <th scope="row" class="dataset-label">{{ _("Modified Date") }}</th>
+      <td class="dataset-details">{{ pkg_dict.modified }}</td>
+    </tr>
+  {% endif %}
+{% endblock %}

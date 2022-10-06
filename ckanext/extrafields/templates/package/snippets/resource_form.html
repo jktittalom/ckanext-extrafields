@@ -1,0 +1,12 @@
+{% ckan_extends %}
+
+{% block basic_fields_url %}
+{{ super() }}
+
+  {{ form.select('terria_catalogue', id='field-terria_catalogue', label=_('Show in Terria Catalouge'), options=[{'value': 'yes', 'text': _('Yes')},{'value': 'no', 'text': _('No')}], selected="yes", error=errors.terria_catalogue) }}
+
+  {{ form.select('point_or_polygon', id='field-point_or_polygon', label=_('Point or Polygon'), options=[{'value': 'polygon', 'text': _('Polygon')},{'value': 'point', 'text': _('Point')}], selected="Polygon", error=errors.point_or_polygon) }}
+
+  {{ form.select('census_geo_year_code', id='field-census_geo_year_code', label=_('Census geography year'), options=[{'value': '2000', 'text': _('2000')},{'value': '2010', 'text': _('2010')},{'value': '2020', 'text': _('2020')},{'value': '2030', 'text': _('2030')}], selected="2010", error=errors.census_geo_year_code) }}
+
+{% endblock %}

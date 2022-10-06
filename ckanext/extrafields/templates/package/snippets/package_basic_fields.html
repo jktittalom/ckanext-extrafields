@@ -1,0 +1,17 @@
+{% ckan_extends %}
+
+{% block package_basic_fields_custom %}
+  {{ form.input('spatial', label=_('Spatial / Geographical Coverage Area'), id='field-spatial', placeholder=_('Spatial / Geographical Coverage Area'), value=data.spatial, error=errors.spatial, classes=['control-medium']) }}
+  {{ form.input('spatial_text', label=_('Spatial / Geographical Coverage Location'), id='field-spatial_text', placeholder=_('Spatial / Geographical Coverage Location'), value=data.spatial_text, error=errors.spatial_text, classes=['control-medium']) }}
+  {{ form.input('temporal_start', label=_('Temporal Start'), id='field-temporal_start', placeholder=_('Temporal Start'), value=data.temporal_start, error=errors.temporal_start, classes=['control-medium'], type="date", is_required="true") }}
+
+  {{ form.input('temporal_end', label=_('Temporal End'), id='field-temporal_end', placeholder=_('Temporal End'), value=data.temporal_end, error=errors.temporal_end, classes=['control-medium']) }}
+
+  {{ form.input('publisher_name', label=_('Publisher'), id='field-publisher_name', placeholder=_('Publisher'), value=data.publisher_name, error=errors.publisher_name, classes=['control-medium']) }}
+
+  {{ form.input('publisher_URL', label=_('Publisher URL'), id='field-publisher_URL', placeholder=_('Publisher URL'), value=data.publisher_URL, error=errors.publisher_URL, classes=['control-medium']) }}
+
+  {{ form.input('data_dictionary_URL', label=_('Data Dictionary URL'), id='field-data_dictionary_URL', placeholder=_('Data Dictionary URL'), value=data.data_dictionary_URL, error=errors.data_dictionary_URL, classes=['control-medium']) }}
+  {{ form.input('issued', label=_('Release Date'), id='field-issued', placeholder=_('Release Date'), value=data.issued, error=errors.issued, classes=['control-medium']) }}
+  {{ form.input('modified', label=_('Modified Date'), id='field-modified', placeholder=_('Modified'), value=data.modified, error=errors.modified, classes=['control-medium']) }}
+{% endblock %}

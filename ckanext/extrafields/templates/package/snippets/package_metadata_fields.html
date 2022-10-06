@@ -1,0 +1,55 @@
+{% ckan_extends %}
+
+{% block package_metadata_fields %}
+
+<!--   <div class="form-group control-medium">
+    <label class="control-label" for="field-topics_code">{{ _("Themes") }}</label>
+    <div class="controls">
+      <select id="field-topics_code" name="topics_code" data-module="autocomplete">
+        {% for topics_code in h.new_topics_codes()  %}
+          <option value="{{ topics_code }}" {% if topics_code in data.get('topics_code', []) %}selected="selected"{% endif %}>{{ topics_code }}</option>
+        {% endfor %}
+      </select>
+    </div>
+  </div> -->
+
+  <div class="form-group control-medium">
+    <label class="control-label" for="field-geography_code">{{ _("Geography") }}</label>
+    <div class="controls">
+      <select id="field-geography_code" name="geography_code" data-module="autocomplete">
+        {% for geography_code in h.geography_codes()  %}
+          <option value="{{ geography_code }}" {% if geography_code in data.get('geography_code', []) %}selected="selected"{% endif %}>{{ geography_code }}</option>
+        {% endfor %}
+      </select>
+    </div>
+  </div>
+
+  <div class="form-group control-medium">
+    <label class="control-label" for="field-granulatiry_code">{{ _("Granulatiry") }}</label>
+    <div class="controls">
+      <select id="field-granulatiry_code" name="granulatiry_code" data-module="autocomplete">
+        {% for granulatiry_code in h.all_granulatiry_codes()  %}
+          <option value="{{ granulatiry_code }}" {% if granulatiry_code in data.get('granulatiry_code', []) %}selected="selected"{% endif %}>{{ granulatiry_code }}</option>
+        {% endfor %}
+      </select>
+    </div>
+  </div>
+
+  <div class="form-group control-medium">
+    <label class="control-label" for="field-frequency_code">{{ _("Frequency") }}</label>
+    <div class="controls">
+      <select id="field-frequency_code" name="frequency_code" data-module="autocomplete">
+        {% for frequency_code in h.frequency_codes()  %}
+          <option value="{{ frequency_code }}" {% if frequency_code in data.get('frequency_code', []) %}selected="selected"{% endif %}>{{ frequency_code }}</option>
+        {% endfor %}
+      </select>
+    </div>
+  </div>
+{{ super() }}
+
+{% endblock %}
+
+{# You could remove 'free extras' from the package form like this, but we keep them for this example's tests.
+  {% block custom_fields %}
+  {% endblock %}
+#}
