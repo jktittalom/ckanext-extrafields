@@ -7,6 +7,10 @@
 
   {{ form.select('point_or_polygon', id='field-point_or_polygon', label=_('Point or Polygon'), options=[{'value': 'polygon', 'text': _('Polygon')},{'value': 'point', 'text': _('Point')}], selected="Polygon", error=errors.point_or_polygon) }}
 
-  {{ form.select('census_geo_year_code', id='field-census_geo_year_code', label=_('Census geography year'), options=[{'value': '2000', 'text': _('2000')},{'value': '2010', 'text': _('2010')},{'value': '2020', 'text': _('2020')},{'value': '2030', 'text': _('2030')}], selected="2010", error=errors.census_geo_year_code) }}
+  {{ form.select('census_geo_year_code', id='field-census_geo_year_code', label=_('Census geography year'), options=[{'value': '2000', 'text': _('2000')},{'value': '2010', 'text': _('2010')},{'value': '2020', 'text': _('2020')},{'value': '2030', 'text': _('2030')}], selected="2020", error=errors.census_geo_year_code) }}
+
+  {{ form.select('resource_year_code', id='field-resource_year_code', label=_('Resource year'), options=[{'value': '2020', 'text': _('2020')},{'value': '2021', 'text': _('2021')},{'value': '2022', 'text': _('2022')},{'value': '2023', 'text': _('2023')},{'value': '2024', 'text': _('2024')},{'value': '2025', 'text': _('2025')},{'value': '2026', 'text': _('2026')},{'value': '2027', 'text': _('2027')},{'value': '2028', 'text': _('2028')},{'value': '2029', 'text': _('2029')}], selected="2020", error=errors.resource_year_code) }}
+
+  {{ form.input('release_date', label=_('Release Date'), id='field-release_date', placeholder=_('Release Date'), value=data.release_date, error=errors.release_date, classes=['control-medium'], type="date", is_required="true") }}
 
 {% endblock %}

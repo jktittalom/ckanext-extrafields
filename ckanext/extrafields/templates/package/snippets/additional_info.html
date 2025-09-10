@@ -1,42 +1,65 @@
 {% ckan_extends %}
 
 {% block extras %}
-  {% if pkg_dict.custom_text %}
+  {% if pkg_dict.spatial %}
     <tr>
       <th scope="row" class="dataset-label">{{ _("Spatial / Geographical Coverage Area") }}</th>
       <td class="dataset-details">{{ pkg_dict.spatial }}</td>
     </tr>
+  {% endif %}
+  {% if pkg_dict.spatial_text %}
     <tr>
       <th scope="row" class="dataset-label">{{ _("Spatial / Geographical Coverage Location") }}</th>
       <td class="dataset-details">{{ pkg_dict.spatial_text }}</td>
     </tr>
+  {% endif %}
+  {% if pkg_dict.temporal_start %}  
     <tr>
       <th scope="row" class="dataset-label">{{ _("Temporal Start") }}</th>
       <td class="dataset-details">{{ pkg_dict.temporal_start }}</td>
     </tr>
+  {% endif %}
+  {% if pkg_dict.temporal_end %}
     <tr>
       <th scope="row" class="dataset-label">{{ _("Temporal End") }}</th>
       <td class="dataset-details">{{ pkg_dict.temporal_end }}</td>
     </tr>
+  {% endif %}
+  {% if pkg_dict.publisher_name %}
     <tr>
       <th scope="row" class="dataset-label">{{ _("Publisher") }}</th>
       <td class="dataset-details">{{ pkg_dict.publisher_name }}</td>
     </tr>
+  {% endif %}
+  {% if pkg_dict.publisher_URL %}
     <tr>
       <th scope="row" class="dataset-label">{{ _("Publisher URL") }}</th>
       <td class="dataset-details">{{ pkg_dict.publisher_URL }}</td>
     </tr>
+  {% endif %}
+  {% if pkg_dict.data_dictionary_URL %}
     <tr>
       <th scope="row" class="dataset-label">{{ _("Data Dictionary URL") }}</th>
       <td class="dataset-details">{{ pkg_dict.data_dictionary_URL }}</td>
     </tr>
+  {% endif %}
+  {% if pkg_dict.issued %}
     <tr>
       <th scope="row" class="dataset-label">{{ _("Release Date") }}</th>
       <td class="dataset-details">{{ pkg_dict.issued }}</td>
     </tr>
+  {% endif %}
+  {% if pkg_dict.modified %}
     <tr>
       <th scope="row" class="dataset-label">{{ _("Modified Date") }}</th>
       <td class="dataset-details">{{ pkg_dict.modified }}</td>
     </tr>
   {% endif %}
+  {% if pkg_dict.frequency_code %}
+    <tr>
+      <th scope="row" class="dataset-label">{{ _("Update Frequency") }}</th>
+      <td class="dataset-details">{{ pkg_dict.frequency_code }}</td>
+    </tr>
+  {% endif %}
+  
 {% endblock %}

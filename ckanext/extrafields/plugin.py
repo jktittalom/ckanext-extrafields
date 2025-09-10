@@ -77,10 +77,18 @@ def create_all_granulatiry_codes():
     try:
         data = {'id': 'all_granulatiry_codes'}
         tk.get_action('vocabulary_show')(context, data)
+
+        # data = {'name': 'all_granulatiry_codes'}
+        # vocab = tk.get_action('vocabulary_update')(context, data)
+        # for tag in (u'Elementary School',u'High School',u'Middle School',u'Combination School',u'Blocks',u'Block Groups', u'Tracts', u'Places', u'ZCTA', u'Florida Counties',u'Florida Congressional Districts',u'Florida House Districts',u'Florida Senate Districts'):
+        #     data = {'name': tag, 'vocabulary_id': vocab['id']}
+        #     tk.get_action('tag_create')(context, data)
+
+
     except tk.ObjectNotFound:
         data = {'name': 'all_granulatiry_codes'}
         vocab = tk.get_action('vocabulary_create')(context, data)
-        for tag in (u'Blocks',u'Block Groups', u'Tracts', u'Places', u'ZCTA', u'Florida Counties',u'Florida Congressional Districts',u'Florida House Districts',u'Florida Senate Districts'):
+        for tag in (u'Elementary School',u'High School',u'Middle School',u'Combination School',u'Blocks',u'Block Groups', u'Tracts', u'Places', u'ZCTA', u'Florida Counties',u'Florida Congressional Districts',u'Florida House Districts',u'Florida Senate Districts'):
             data = {'name': tag, 'vocabulary_id': vocab['id']}
             tk.get_action('tag_create')(context, data)
 
@@ -277,6 +285,12 @@ class ExampleIDatasetFormPlugin(p.SingletonPlugin, tk.DefaultDatasetForm):
         schema['resources'].update({
                 'census_geo_year_code' : [ tk.get_validator('ignore_missing') ]
                 })
+        schema['resources'].update({
+                'resource_year_code' : [ tk.get_validator('ignore_missing') ]
+                })
+        schema['resources'].update({
+                'release_date' : [ tk.get_validator('ignore_missing') ]
+                })
 
         return schema
 
@@ -356,6 +370,12 @@ class ExampleIDatasetFormPlugin(p.SingletonPlugin, tk.DefaultDatasetForm):
                 })
         schema['resources'].update({
                 'census_geo_year_code' : [ tk.get_validator('ignore_missing') ]
+                })
+        schema['resources'].update({
+                'resource_year_code' : [ tk.get_validator('ignore_missing') ]
+                })
+        schema['resources'].update({
+                'release_date' : [ tk.get_validator('ignore_missing') ]
                 })
         return schema
     
