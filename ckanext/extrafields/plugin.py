@@ -1,20 +1,125 @@
 import ckan.plugins as p
 import ckan.plugins.toolkit as tk
+import json
+import os
+import re
+from ckan.logic.action.create import package_create as core_package_create
+from ckan.logic.action.update import package_update as core_package_update
+from ckan.logic.action.delete import resource_delete as core_resource_delete
+
+# ================================
+# JSON FILE HANDLING LOGIC (NEW)
+# ================================
+
+SHARED_DIR = '/shared/allJsons'
+
+def sanitize_filename(text):
+    """Convert any string into safe filename (alphanumeric + underscore/dash)."""
+    if not isinstance(text, str):
+        text = str(text)
+    safe = re.sub(r'[^a-zA-Z0-9\-_\.]', '_', text.strip())
+    safe = re.sub(r'_+', '_', safe)
+    safe = safe.strip('_')
+    return safe if safe else 'untitled'
+
+def get_resource_filename(dataset_title, resource):
+    """Generate filename: {DatasetTitle}__{resource_year_code}.json"""
+    year_code = resource.get('resource_year_code', 'unknown')  # ← YOUR FIELD NAME
+    title_part = sanitize_filename(dataset_title)
+    year_part = sanitize_filename(year_code)
+    return f"{title_part}__{year_part}.json"
+
+def write_resource_json(dataset_dict, resource, action):
+    """Write one JSON file per resource."""
+    os.makedirs(SHARED_DIR, exist_ok=True)
+
+    dataset_title = dataset_dict.get('title', 'Untitled Dataset')
+    filename = get_resource_filename(dataset_title, resource)
+    filepath = os.path.join(SHARED_DIR, filename)
+
+    data_to_write = {
+        'dataset': {
+            'id': dataset_dict.get('id'),
+            'name': dataset_dict.get('name'),
+            'title': dataset_title,
+        },
+        'resource': resource,
+        'action': action,
+        'timestamp': tk.datetime.datetime.utcnow().isoformat()
+    }
+
+    try:
+        with open(filepath, 'w', encoding='utf-8') as f:
+            json.dump(data_to_write, f, indent=2, ensure_ascii=False)
+        tk.log.info(f"✅ Resource JSON written: {filepath}")
+    except Exception as e:
+        tk.log.error(f"❌ Failed to write {filepath}: {e}")
+
+def delete_resource_json(dataset_title, resource):
+    """Delete corresponding JSON file for this resource."""
+    filename = get_resource_filename(dataset_title, resource)
+    filepath = os.path.join(SHARED_DIR, filename)
+
+    try:
+        if os.path.exists(filepath):
+            os.remove(filepath)
+            tk.log.info(f"🗑️ Deleted resource JSON: {filepath}")
+        else:
+            tk.log.warning(f"⚠️ JSON file not found for deletion: {filepath}")
+    except Exception as e:
+        tk.log.error(f"❌ Failed to delete {filepath}: {e}")
+
+@tk.chained_action
+def package_create(original_action, context, data_dict):
+    result = original_action(context, data_dict)
+    for resource in result.get('resources', []):
+        write_resource_json(result, resource, 'create')
+    return result
+
+@tk.chained_action
+def package_update(original_action, context, data_dict):
+    result = original_action(context, data_dict)
+    for resource in result.get('resources', []):
+        write_resource_json(result, resource, 'update')
+    return result
+
+@tk.chained_action
+def resource_delete(original_action, context, data_dict):
+    """Intercept resource delete to remove its JSON file first."""
+    resource_id = data_dict.get('id')
+    if not resource_id:
+        return original_action(context, data_dict)
+
+    try:
+        # Fetch resource and its parent dataset BEFORE deletion
+        resource = tk.get_action('resource_show')(context, {'id': resource_id})
+        dataset = tk.get_action('package_show')(context, {'id': resource['package_id']})
+        dataset_title = dataset.get('title', 'Untitled Dataset')
+
+        # Delete associated JSON file
+        delete_resource_json(dataset_title, resource)
+
+    except Exception as e:
+        tk.log.error(f"⚠️ Error during pre-delete JSON cleanup: {e}")
+
+    # Proceed with actual deletion
+    return original_action(context, data_dict)
+
+@tk.chained_action
+def package_delete(original_action, context, data_dict):
+    try:
+        dataset = tk.get_action('package_show')(context, data_dict)
+        for resource in dataset.get('resources', []):
+            delete_resource_json(dataset.get('title', 'Untitled Dataset'), resource)
+    except Exception as e:
+        tk.log.error(f"Error cleaning up JSONs on dataset delete: {e}")
+    return original_action(context, data_dict)
+
+# ================================
+# EXISTING VOCABULARY & HELPER CODE
+# ================================
 
 
-# def add_tag_in_vocab():
-#     user = tk.get_action('get_site_user')({'ignore_auth': True}, {})
-#     context = {'user': user['name']}
-#     try:
-#         data = {'id': 'topics_codes'}
-#         tk.get_action('vocabulary_show')(context, data)
-#     except tk.ObjectNotFound:
-#         data = {'name': 'topics_codes'}
-#         vocab = tk.get_action('vocabulary_create')(context, data)
-#         """ topic = {"1":"Art Culture", "2":"Basic needs", "3":"Children AND Families", "4":"Civic AND Public Safety", "5":"Economy"} """
-#         for tag in (u'Art Culture', u'Children AND Families', u'Civic AND Public Safety'):
-#             data = {'name': tag, 'vocabulary_id': vocab['id']}
-#             tk.get_action('tag_create')(context, data)
 
 # Jiten, Testing new_topics_codes
 def create_new_topics_codes():
@@ -31,45 +136,7 @@ def create_new_topics_codes():
             data = {'name': tag, 'vocabulary_id': vocab['id']}
             tk.get_action('tag_create')(context, data)    
 
-# def create_topics_codes():
-#     user = tk.get_action('get_site_user')({'ignore_auth': True}, {})
-#     context = {'user': user['name']}
-#     try:
-#         data = {'id': 'topics_codes'}
-#         tk.get_action('vocabulary_show')(context, data)
-#     except tk.ObjectNotFound:
-#         data = {'name': 'topics_codes'}
-#         vocab = tk.get_action('vocabulary_create')(context, data)
-#         """ topic = {"1":"Art Culture", "2":"Basic needs", "3":"Children AND Families", "4":"Civic AND Public Safety", "5":"Economy"} """
-#         for tag in (u'Art Culture', u'Children AND Families', u'Civic AND Public Safety'):
-#             data = {'name': tag, 'vocabulary_id': vocab['id']}
-#             tk.get_action('tag_create')(context, data)
 
-# def create_county_codes():
-#     user = tk.get_action('get_site_user')({'ignore_auth': True}, {})
-#     context = {'user': user['name']}
-#     try:
-#         data = {'id': 'county_codes'}
-#         tk.get_action('vocabulary_show')(context, data)
-#     except tk.ObjectNotFound:
-#         data = {'name': 'county_codes'}
-#         vocab = tk.get_action('vocabulary_create')(context, data)
-#         for tag in (u'Florida Counties',u'Florida Congressional Districts', u'DeSoto', u'Hillsborough', u'Manatee', u'Pinellas', u'Sarasota'):
-#             data = {'name': tag, 'vocabulary_id': vocab['id']}
-#             tk.get_action('tag_create')(context, data)
-
-# def create_granulatiry_codes():
-#     user = tk.get_action('get_site_user')({'ignore_auth': True}, {})
-#     context = {'user': user['name']}
-#     try:
-#         data = {'id': 'granulatiry_codes'}
-#         tk.get_action('vocabulary_show')(context, data)
-#     except tk.ObjectNotFound:
-#         data = {'name': 'granulatiry_codes'}
-#         vocab = tk.get_action('vocabulary_create')(context, data)
-#         for tag in (u'All Florida Counties', u'Census Tracts', u'Places', u'ZIP Codes'):
-#             data = {'name': tag, 'vocabulary_id': vocab['id']}
-#             tk.get_action('tag_create')(context, data)
 
 def create_all_granulatiry_codes():
     user = tk.get_action('get_site_user')({'ignore_auth': True}, {})
@@ -133,31 +200,6 @@ def create_census_geo_year_codes():
         for tag in (u'2000', u'2010', u'2020', u'2030'):
             data = {'name': tag, 'vocabulary_id': vocab['id']}
             tk.get_action('tag_create')(context, data)
-
-
-
-# def topics_codes():
-#     """ Return the list of Topics from the Topic Vocabulary. """
-#     #create_topics_codes()
-#     add_tag_in_vocab()
-#     try:
-#         topics_codes = tk.get_action('tag_list')(
-#                 data_dict={'vocabulary_id':'topics_codes'})
-#         return topics_codes
-#     except tk.ObjectNotFound:
-#         return None
-
-
-# def county_codes():
-#     """ Return the list of County from the County Vocabulary. """
-#     create_county_codes()
-#     #add_county_tag_in_vocab()
-#     try:
-#         county_codes = tk.get_action('tag_list')(
-#                 data_dict={'vocabulary_id':'county_codes'})
-#         return county_codes
-#     except tk.ObjectNotFound:
-#         return None
 
 
 def geography_codes():
@@ -378,4 +420,12 @@ class ExampleIDatasetFormPlugin(p.SingletonPlugin, tk.DefaultDatasetForm):
                 'release_date' : [ tk.get_validator('ignore_missing') ]
                 })
         return schema
+
+    def get_actions(self):
+        return {
+            'package_create': package_create,
+            'package_update': package_update,
+            'package_delete': package_delete,
+            'resource_delete': resource_delete,
+        }
     
