@@ -71,6 +71,9 @@ def delete_resource_json(dataset_title, resource):
 
 @tk.chained_action
 def package_create(original_action, context, data_dict):
+    print("🚀🚀🚀 package_create ACTION TRIGGERED!")  # This prints to container stdout
+    tk.log.info("🚀 package_create ACTION TRIGGERED!")
+
     result = original_action(context, data_dict)
     for resource in result.get('resources', []):
         write_resource_json(result, resource, 'create')
@@ -78,6 +81,8 @@ def package_create(original_action, context, data_dict):
 
 @tk.chained_action
 def package_update(original_action, context, data_dict):
+     print("🚀🚀🚀 package_update ACTION TRIGGERED!")  # This prints to container stdout
+    tk.log.info("🚀 package_update ACTION TRIGGERED!")
     result = original_action(context, data_dict)
     for resource in result.get('resources', []):
         write_resource_json(result, resource, 'update')
@@ -86,6 +91,9 @@ def package_update(original_action, context, data_dict):
 @tk.chained_action
 def resource_delete(original_action, context, data_dict):
     """Intercept resource delete to remove its JSON file first."""
+
+     print("🚀🚀🚀 resource_delete ACTION TRIGGERED!")  # This prints to container stdout
+    tk.log.info("🚀 resource_delete ACTION TRIGGERED!")
     resource_id = data_dict.get('id')
     if not resource_id:
         return original_action(context, data_dict)
@@ -255,6 +263,7 @@ class ExampleIDatasetFormPlugin(p.SingletonPlugin, tk.DefaultDatasetForm):
     p.implements(p.IDatasetForm, inherit=False)
     p.implements(p.IConfigurer, inherit=False)
     p.implements(p.ITemplateHelpers, inherit=False)
+    p.implements(p.ITemplateHelpers, inherit=False)
 
     def update_config(self, config):
         # Add this plugin's templates dir to CKAN's extra_template_paths, so
@@ -422,6 +431,7 @@ class ExampleIDatasetFormPlugin(p.SingletonPlugin, tk.DefaultDatasetForm):
         return schema
 
     def get_actions(self):
+        tk.log.info("🔧 get_actions() CALLED — Registering package_create, package_update, resource_delete")
         return {
             'package_create': package_create,
             'package_update': package_update,
