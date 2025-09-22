@@ -3,6 +3,7 @@ import ckan.plugins.toolkit as tk
 import json
 import os
 import re
+from ckan.logic import chained_action
 from ckan.logic.action.create import package_create as core_package_create
 from ckan.logic.action.update import package_update as core_package_update
 from ckan.logic.action.delete import resource_delete as core_resource_delete
@@ -69,7 +70,7 @@ def delete_resource_json(dataset_title, resource):
     except Exception as e:
         tk.log.error(f"❌ Failed to delete {filepath}: {e}")
 
-@tk.chained_action
+@chained_action  # 👈 NOT tk.chained_action
 def package_create(original_action, context, data_dict):
     print("🚀🚀🚀 package_create ACTION TRIGGERED!")  # This prints to container stdout
     tk.log.info("🚀 package_create ACTION TRIGGERED!")
@@ -79,7 +80,7 @@ def package_create(original_action, context, data_dict):
         write_resource_json(result, resource, 'create')
     return result
 
-@tk.chained_action
+@chained_action  # 👈 NOT tk.chained_action
 def package_update(original_action, context, data_dict):
      print("🚀🚀🚀 package_update ACTION TRIGGERED!")  # This prints to container stdout
     tk.log.info("🚀 package_update ACTION TRIGGERED!")
@@ -88,7 +89,7 @@ def package_update(original_action, context, data_dict):
         write_resource_json(result, resource, 'update')
     return result
 
-@tk.chained_action
+@chained_action  # 👈 NOT tk.chained_action
 def resource_delete(original_action, context, data_dict):
     """Intercept resource delete to remove its JSON file first."""
 
@@ -113,7 +114,7 @@ def resource_delete(original_action, context, data_dict):
     # Proceed with actual deletion
     return original_action(context, data_dict)
 
-@tk.chained_action
+@chained_action
 def package_delete(original_action, context, data_dict):
     try:
         dataset = tk.get_action('package_show')(context, data_dict)
